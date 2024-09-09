@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand">Navbar</a>
+      <a class="navbar-brand" href="/home">Navbar</a>
 
       <button class="btn btn-outline-success" type="button" @click.prevent="handleLogOut">
         Log Out

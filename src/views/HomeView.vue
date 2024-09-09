@@ -2,18 +2,20 @@
   <div>
     Xem farm
     <div v-if="farmsStore.farms.length > 0">
-      <ul>
-        <li v-for="farm in farms" :key="farm.id">
-          <h2>{{ farm.name }}</h2>
-          <p>{{ farm.address }}</p>
-          <img :src="farm.image" alt="Farm Image" />
-        </li>
-      </ul>
+      <div class="card" style="width: 18rem" v-for="farm in farms" :key="farm.id">
+        <img :src="getImageUrl(farm.image)" class="card-img-top" style=" height: 18rem;" :alt="farm.image" />
+        <div class="card-body">
+          <h3>{{ farm.name }}</h3>
+          <p class="card-text">
+            {{ farm.address }}
+          </p>
+        </div>
+      </div>
 
       <div class="pagination">
-        <button @click="prevPage" :disabled="!farmsStore.hasPreviousPage">Previous</button>
+        <button @click.prevent="prevPage" :disabled="!farmsStore.hasPreviousPage">Previous</button>
         <span>Page {{ farmsStore.currentPage }} of {{ farmsStore.meta.pageCount }}</span>
-        <button @click="nextPage" :disabled="!farmsStore.hasNextPage">Next</button>
+        <button @click.prevent="nextPage" :disabled="!farmsStore.hasNextPage">Next</button>
       </div>
     </div>
     <p v-else>No farms available</p>
@@ -24,9 +26,10 @@
 import { useFarmsStore } from '@/stores/farmStore'
 import { storeToRefs } from 'pinia'
 import { onMounted, watch } from 'vue'
+import { getImageUrl } from '../globalFunction/getImage'
 
 const farmsStore = useFarmsStore()
-// 
+//
 const { farms, meta, currentPage, hasPreviousPage, hasNextPage } = storeToRefs(farmsStore)
 
 const fetchFarms = () => {
@@ -45,9 +48,13 @@ onMounted(() => {
   fetchFarms()
 })
 
-watch(() => farmsStore.currentPage, () => {
-  fetchFarms()
-})
+// theo doi data thay doi va call lai html k nên dung ở đây vì trong store đã dùng this.currentPage
+// watch(
+//   () => farmsStore.currentPage,
+//   () => {
+//     fetchFarms()
+//   }
+// )
 </script>
 
 <style scoped></style>

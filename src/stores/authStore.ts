@@ -62,6 +62,9 @@ export const useAuthStore = defineStore('authStore', {
         if (response.data.user) {
           localStorage.setItem('user', JSON.stringify(response.data.user))
         }
+
+
+        
         return response.data
       } catch (error) {
         console.error('Login failed', error)

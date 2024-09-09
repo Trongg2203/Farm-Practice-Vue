@@ -46,11 +46,11 @@ interface ApiResponse {
 
 export const useFarmsStore = defineStore('farmsStore', {
   state: () => ({
-    farms: [] as Farm[],
-    meta: {} as Meta,
-    currentPage: 1,
-    isLoading: false,
-    error: null as string | null
+    farms: [] as Farm[], // Danh sách các farms (trang trại)
+    meta: {} as Meta, // Thông tin phân trang từ API
+    currentPage: 1, // Trang hiện tại đang được hiển thị
+    isLoading: false, // Trạng thái đang tải (đang gọi API)
+    error: null as string | null // Thông báo lỗi nếu có lỗi xảy ra
   }),
   getters: {
     hasPreviousPage: (state) => state.meta.hasPreviousPage,
@@ -58,14 +58,17 @@ export const useFarmsStore = defineStore('farmsStore', {
   },
   actions: {
     async fetchFarms(page: number = 1) {
+      // isLoading thành true để chỉ ra rằng dữ liệu đang được tải.
       this.isLoading = true
       this.error = null
       try {
+        //Sau đó, nó gọi API để lấy dữ liệu, và nếu thành công, cập nhật farms, meta, và currentPage.
         const response = await axiosInstance.get<ApiResponse>(
           `/farm/all?order=ASC&page=${page}&take=1`
         )
 
-        console.log('API Response:', response.data)
+        // console.log('API Response:', response.data)
+
         this.farms = response.data.data
         this.meta = response.data.meta
         this.currentPage = page
@@ -80,17 +83,23 @@ export const useFarmsStore = defineStore('farmsStore', {
         this.isLoading = false
       }
     },
-    nextPage() {
+
+    createFarm() {
+      try {
+      } catch (error) {}
+    },
+    async nextPage() {
       if (this.meta.hasNextPage) {
-        // this.fetchFarms(this.currentPage + 1)
-        this.currentPage++
+        // console.log('before next ', this.currentPage)
+        await this.fetchFarms(this.currentPage + 1)
+        // console.log('after next ', this.currentPage)
       }
     },
-    prevPage() {
+    async prevPage() {
       if (this.meta.hasPreviousPage) {
-        // this.fetchFarms(this.currentPage - 1)
-
-        this.currentPage++
+        // console.log('before prev ', this.currentPage)
+        await this.fetchFarms(this.currentPage - 1)
+        // console.log('after prev ', this.currentPage)
       }
     }
   }
