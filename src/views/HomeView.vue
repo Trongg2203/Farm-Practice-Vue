@@ -26,7 +26,7 @@
 import { useFarmsStore } from '@/stores/farmStore'
 import { storeToRefs } from 'pinia'
 import { onMounted, watch } from 'vue'
-import { getImageUrl } from '../globalFunction/getImage'
+import { getImageUrl } from '../helpers/getImage'
 
 const farmsStore = useFarmsStore()
 //

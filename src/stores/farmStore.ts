@@ -1,48 +1,14 @@
 import axiosInstance from '@/axios/axiosInstance'
+import type {
+  ApiResponse,
+  CreateFarmRequest,
+  DeleteFarmResponse,
+  Farm,
+  Meta,
+  UpdateFarmRequest
+} from '@/typings/farms'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-
-// Interface cho đối tượng Location
-interface Location {
-  latitude: number
-  longitude: number
-}
-
-// Interface cho đối tượng Farm
-interface Farm {
-  createdAt: string
-  updatedAt: string
-  id: string
-  name: string
-  business_model: string
-  business_type: string
-  province: string
-  district: string
-  wards: string
-  address: string
-  region: string
-  phoneNumber: string
-  user_representative: string
-  email: string
-  location: Location
-  image: string
-}
-
-// Interface cho đối tượng Meta
-interface Meta {
-  page: number
-  take: number
-  itemCount: number
-  pageCount: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
-}
-
-// Interface cho phản hồi API
-interface ApiResponse {
-  data: Farm[]
-  meta: Meta
-}
 
 export const useFarmsStore = defineStore('farmsStore', {
   state: () => ({
@@ -64,7 +30,7 @@ export const useFarmsStore = defineStore('farmsStore', {
       try {
         //Sau đó, nó gọi API để lấy dữ liệu, và nếu thành công, cập nhật farms, meta, và currentPage.
         const response = await axiosInstance.get<ApiResponse>(
-          `/farm/all?order=ASC&page=${page}&take=1`
+          `/farm/all?order=ASC&page=${page}&take=10`
         )
 
         // console.log('API Response:', response.data)
@@ -84,9 +50,70 @@ export const useFarmsStore = defineStore('farmsStore', {
       }
     },
 
-    createFarm() {
+    async createFarm(farmData: CreateFarmRequest) {
+      this.isLoading = true
+      this.error = null
       try {
-      } catch (error) {}
+        //'Content-Type': 'multipart/form-data' là một header HTTP quan trọng được sử dụng khi gửi dữ liệu từ client lên server,
+        //đặc biệt là khi form chứa các file hoặc dữ liệu nhị phân. Hãy phân tích nó chi tiết:
+        //Content-Type:
+        //Đây là một HTTP header chỉ định kiểu nội dung của dữ liệu được gửi trong body của request.
+        //multipart/form-data:
+        //'multipart' nghĩa là dữ liệu được chia thành nhiều phần.
+        //'form-data' chỉ ra rằng dữ liệu này đến từ một form HTML.
+        const response = await axiosInstance.post('/farm/create-farm', farmData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        await this.fetchFarms(this.currentPage)
+        return response.data
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('AxiosError:', error.response?.data || error.message)
+        } else {
+          console.error('Unexpected Error:', error)
+        }
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async updateFarm(farmId: string, farmData: UpdateFarmRequest) {
+      this.isLoading = true
+      this.error = null
+      try {
+        await axiosInstance.put(`/farm/update-farm?id=${farmId}`, farmData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        await this.fetchFarms(this.currentPage)
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('AxiosError:', error.response?.data || error.message)
+        } else {
+          console.error('Unexpected Error:', error)
+        }
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async deleteFarm(farmId: string) {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axiosInstance.delete<DeleteFarmResponse>(`/farm/delete?id=${farmId}`)
+        if (response.data.success) {
+          await this.fetchFarms(this.currentPage)
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('AxiosError:', error.response?.data || error.message)
+        } else {
+          console.error('Unexpected Error:', error)
+        }
+        throw error
+      } finally {
+        this.isLoading = false
+      }
     },
     async nextPage() {
       if (this.meta.hasNextPage) {

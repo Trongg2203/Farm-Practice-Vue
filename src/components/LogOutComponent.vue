@@ -2,6 +2,8 @@
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/home">Navbar</a>
+      <!-- quyền admin -->
+      <a href="/dashboard" v-if="authStore.isAdmin">Dashboard</a>
 
       <button class="btn btn-outline-success" type="button" @click.prevent="handleLogOut">
         Log Out
