@@ -16,7 +16,8 @@ export const useFarmsStore = defineStore('farmsStore', {
     meta: {} as Meta, // Thông tin phân trang từ API
     currentPage: 1, // Trang hiện tại đang được hiển thị
     isLoading: false, // Trạng thái đang tải (đang gọi API)
-    error: null as string | null // Thông báo lỗi nếu có lỗi xảy ra
+    error: null as string | null, // Thông báo lỗi nếu có lỗi xảy ra
+    selectedFarm: null as Farm | null // Chi tiết của farm được chọn
   }),
   getters: {
     hasPreviousPage: (state) => state.meta.hasPreviousPage,
@@ -30,11 +31,8 @@ export const useFarmsStore = defineStore('farmsStore', {
       try {
         //Sau đó, nó gọi API để lấy dữ liệu, và nếu thành công, cập nhật farms, meta, và currentPage.
         const response = await axiosInstance.get<ApiResponse>(
-          `/farm/all?order=ASC&page=${page}&take=10`
+          `/farm/all?order=ASC&page=${page}&take=2`
         )
-
-        // console.log('API Response:', response.data)
-
         this.farms = response.data.data
         this.meta = response.data.meta
         this.currentPage = page
@@ -50,13 +48,29 @@ export const useFarmsStore = defineStore('farmsStore', {
       }
     },
 
+    async fetchFarmDetail(id: string) {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axiosInstance.get(`/farm?id=${id}`)  
+        this.selectedFarm = response.data
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.log('Axios Error', error.response?.data || error.message)
+        } else {
+          console.error('Unexpected Error:', error)
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     async createFarm(farmData: CreateFarmRequest) {
       this.isLoading = true
       this.error = null
       try {
         //'Content-Type': 'multipart/form-data' là một header HTTP quan trọng được sử dụng khi gửi dữ liệu từ client lên server,
-        //đặc biệt là khi form chứa các file hoặc dữ liệu nhị phân. Hãy phân tích nó chi tiết:
-        //Content-Type:
+        //đặc biệt là khi form chứa các file hoặc dữ liệu nhị phân
         //Đây là một HTTP header chỉ định kiểu nội dung của dữ liệu được gửi trong body của request.
         //multipart/form-data:
         //'multipart' nghĩa là dữ liệu được chia thành nhiều phần.
@@ -117,16 +131,12 @@ export const useFarmsStore = defineStore('farmsStore', {
     },
     async nextPage() {
       if (this.meta.hasNextPage) {
-        // console.log('before next ', this.currentPage)
         await this.fetchFarms(this.currentPage + 1)
-        // console.log('after next ', this.currentPage)
       }
     },
     async prevPage() {
       if (this.meta.hasPreviousPage) {
-        // console.log('before prev ', this.currentPage)
         await this.fetchFarms(this.currentPage - 1)
-        // console.log('after prev ', this.currentPage)
       }
     }
   }

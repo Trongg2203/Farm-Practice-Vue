@@ -48,6 +48,12 @@
         </tr>
       </tbody>
     </table>
+    <!-- pagination -->
+    <div class="pagination">
+      <button @click.prevent="prevPage" :disabled="!farmsStore.hasPreviousPage"><</button>
+      <span> Page {{ farmsStore.currentPage }} - {{ farmsStore.meta.pageCount }}</span>
+      <button @click.prevent="nextPage" :disabled="!farmsStore.hasNextPage">></button>
+    </div>
   </div>
 
   <!-- Modal Create/Edit -->
@@ -169,9 +175,16 @@ import axios from 'axios'
 
 const farmsStore = useFarmsStore()
 const { farms, meta, currentPage, hasPreviousPage, hasNextPage } = storeToRefs(farmsStore)
-const isEditMode = ref(false)  // Xác định chế độ chỉnh sửa hay tạo mới
+const isEditMode = ref(false) // Xác định chế độ chỉnh sửa hay tạo mới
 const isEditModalVisible = ref(false) // Hiển thị/Ẩn modal chỉnh sửa
 const isDeleteModalVisible = ref(false) // Hiển thị/Ẩn modal xóa
+
+const nextPage = () => {
+  farmsStore.nextPage()
+}
+const prevPage = () =>{
+  farmsStore.prevPage()
+}
 const formData = reactive<CreateFarmRequest>({
   name: '',
   business_model: '',
@@ -194,6 +207,7 @@ const selectedFarm = ref<Farm | null>(null)
 
 const closeModal = () => {
   isEditModalVisible.value = false
+  isDeleteModalVisible.value = false 
 }
 const openCreateModal = () => {
   isEditMode.value = false
@@ -223,7 +237,7 @@ const openCreateModal = () => {
 const handleSubmit = async () => {
   // Tạo một đối tượng FormData để gửi dữ liệu
   const formDataToSend = new FormData()
-    // Thêm các trường bắt buộc vào FormData
+  // Thêm các trường bắt buộc vào FormData
   formDataToSend.append('name', formData.name)
   formDataToSend.append('business_model', formData.business_model)
   formDataToSend.append('business_type', formData.business_type)
@@ -239,20 +253,20 @@ const handleSubmit = async () => {
   formDataToSend.append('user_representative', formData.user_representative || '')
   formDataToSend.append('email', formData.email || '')
 
-   // Thêm hình ảnh nếu có, nếu không thì sử dụng hình ảnh mặc định
+  // Thêm hình ảnh nếu có, nếu không thì sử dụng hình ảnh mặc định
   if (formData.image instanceof File) {
     // Nếu formData.image là đối tượng File, thêm vào FormData với tên file
-    formDataToSend.append('image', formData.image , formData.image.name)
-  } else if(typeof formData.image ==='string' && formData.image.startsWith('/uploads/farms/')){
+    formDataToSend.append('image', formData.image, formData.image.name)
+  } else if (typeof formData.image === 'string' && formData.image.startsWith('/uploads/farms/')) {
     // Nếu formData.image là chuỗi và bắt đầu bằng '/uploads/farms/', thêm vào FormData
-    formDataToSend.append('image', formData.image);
-  }else{
-     // Nếu không có hình ảnh hợp lệ, sử dụng hình ảnh mặc định
-    formDataToSend.append('image', '/uploads/farms/default-image.png');
+    formDataToSend.append('image', formData.image)
+  } else {
+    // Nếu không có hình ảnh hợp lệ, sử dụng hình ảnh mặc định
+    formDataToSend.append('image', '/uploads/farms/default-image.png')
   }
-  
+
   try {
-     // Nếu đang ở chế độ chỉnh sửa, gọi API để cập nhật farm, ngược lại gọi API để tạo mới farm
+    // Nếu đang ở chế độ chỉnh sửa, gọi API để cập nhật farm, ngược lại gọi API để tạo mới farm
     if (isEditMode.value) {
       await farmsStore.updateFarm(formData.id!, formDataToSend)
     } else {
@@ -275,10 +289,10 @@ const handleFileChange = (event: Event) => {
   const file = input.files?.[0]
   if (file) {
     // Gán file vào formData.image để lưu trữ thông tin về hình ảnh
-    formData.image = file 
+    formData.image = file
     // Tạo một đối tượng FileReader để đọc nội dung file
     const reader = new FileReader()
-     // Khi đọc file hoàn tất, cập nhật previewImage với dữ liệu hình ảnh
+    // Khi đọc file hoàn tất, cập nhật previewImage với dữ liệu hình ảnh
     reader.onload = () => {
       previewImage.value = reader.result as string
     }

@@ -3,13 +3,20 @@
     Xem farm
     <div v-if="farmsStore.farms.length > 0">
       <div class="card" style="width: 18rem" v-for="farm in farms" :key="farm.id">
-        <img :src="getImageUrl(farm.image)" class="card-img-top" style=" height: 18rem;" :alt="farm.image" />
-        <div class="card-body">
-          <h3>{{ farm.name }}</h3>
-          <p class="card-text">
-            {{ farm.address }}
-          </p>
-        </div>
+        <router-link :to="{name:'detail-farm', params:{id:farm.id}}">
+          <img
+            :src="getImageUrl(farm.image)"
+            class="card-img-top"
+            style="height: 18rem"
+            :alt="farm.image"
+          />
+          <div class="card-body">
+            <h3>{{ farm.name }}</h3>
+            <p class="card-text">
+              {{ farm.address }}
+            </p>
+          </div>
+        </router-link>
       </div>
 
       <div class="pagination">
@@ -29,8 +36,9 @@ import { onMounted, watch } from 'vue'
 import { getImageUrl } from '../helpers/getImage'
 
 const farmsStore = useFarmsStore()
-//
+
 const { farms, meta, currentPage, hasPreviousPage, hasNextPage } = storeToRefs(farmsStore)
+
 
 const fetchFarms = () => {
   farmsStore.fetchFarms()

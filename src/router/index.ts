@@ -3,6 +3,7 @@ import LoginView from '@/views/LoginView.vue'
 import DashBoardView from '@/views/DashBoardView.vue'
 import HomeView from '@/views/HomeView.vue'
 import { useAuthStore } from '@/stores/authStore'
+import DetailFarmView from '@/views/DetailFarmView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,12 @@ const router = createRouter({
       name: 'Home',
       component: HomeView,
       meta: { requiresAuth: true }
+    },
+    {
+      path:'/farm/detail/:id',
+      name:'detail-farm',
+      component:DetailFarmView,
+      props: true, // Để truyền `id` từ URL vào component
     }
   ]
 })
