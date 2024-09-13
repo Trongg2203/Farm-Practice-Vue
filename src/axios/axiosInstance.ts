@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   baseURL: 'http://118.69.126.49:8878/api',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization':'Bearer <token>'
+    'Authorization':'Bearer <token>',
   }
 })
 

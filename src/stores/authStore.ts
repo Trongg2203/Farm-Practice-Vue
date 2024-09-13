@@ -1,28 +1,7 @@
 import axiosInstance from '@/axios/axiosInstance'
+import type { AuthState, Register } from '@/typings/auth'
+import axios from 'axios'
 import { defineStore } from 'pinia'
-
-interface User {
-  createdAt: string
-  updatedAt: string
-  id: string
-  fullName: string
-  jobTitle: string
-  description: string
-  avatar: string | null
-  username: string
-  email: string
-  phoneNumber: string
-  role: string
-  isLocked: boolean
-  homeTown: string
-  address: string
-}
-
-interface AuthState {
-  user: User | null
-  accessToken: string | null
-  refreshToken: string | null
-}
 
 export const useAuthStore = defineStore('authStore', {
   // initialize state
@@ -40,6 +19,26 @@ export const useAuthStore = defineStore('authStore', {
     isLoggedIn: (state) => !!state.user && !!state.accessToken
   },
   actions: {
+    async register(formData: FormData) {
+      try {
+        const response = await axiosInstance.post('/auth/register', formData)
+        alert('Dang ky thanh cong');
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            console.log('Error data:', error.response.data)
+            console.log('Error status:', error.response.status)
+            console.log('Error headers:', error.response.headers)
+          } else if (error.request) {
+            console.log('Error request:', error.request)
+          } else {
+            console.log('Error message:', error.message)
+          }
+        } else {
+          console.log('Unexpected error:', error)
+        }
+      }
+    },
     async login(username: string, password: string) {
       try {
         const response = await axiosInstance.post<AuthState>('/auth/login', {
@@ -62,9 +61,6 @@ export const useAuthStore = defineStore('authStore', {
         if (response.data.user) {
           localStorage.setItem('user', JSON.stringify(response.data.user))
         }
-
-
-        
         return response.data
       } catch (error) {
         console.error('Login failed', error)

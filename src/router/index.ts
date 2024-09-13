@@ -4,6 +4,7 @@ import DashBoardView from '@/views/DashBoardView.vue'
 import HomeView from '@/views/HomeView.vue'
 import { useAuthStore } from '@/stores/authStore'
 import DetailFarmView from '@/views/DetailFarmView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,6 +14,11 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: LoginView
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: RegisterView
     },
     {
       path: '/dashboard',
@@ -27,10 +33,10 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path:'/farm/detail/:id',
-      name:'detail-farm',
-      component:DetailFarmView,
-      props: true, // Để truyền `id` từ URL vào component
+      path: '/farm/detail/:id',
+      name: 'detail-farm',
+      component: DetailFarmView,
+      props: true // Để truyền `id` từ URL vào component
     }
   ]
 })

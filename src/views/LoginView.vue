@@ -1,6 +1,7 @@
 <template>
   <div class="flex">
     <form class="form" @submit.prevent="handleLogin">
+      <h3>Đăng nhập</h3>
       <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input
@@ -17,7 +18,10 @@
         <input type="password" class="form-control" id="exampleInputPassword1" v-model="password" />
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div class="col">
+        <button type="submit" class="btn btn-primary col-6">Đăng nhập</button>
+        <button @click.prevent="register" class="btn btn-register col-6">Đăng ký</button>
+      </div>
     </form>
   </div>
 </template>
@@ -34,6 +38,9 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 // const error = ref('')
+const register = () =>{
+  router.push('/register')
+}
 
 const handleLogin = async () => {
   try {
@@ -51,6 +58,10 @@ const handleLogin = async () => {
 </script>
 
 <style>
+
+.btn-register{
+  border: 1px solid #ccc;
+}
 .flex {
   display: flex;
   justify-content: center;
