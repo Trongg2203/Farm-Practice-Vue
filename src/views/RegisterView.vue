@@ -2,7 +2,7 @@
   <div class="flex">
     <form class="form" @submit.prevent="handleRegister">
       <h3>Đăng ký</h3>
-      <p id="error" style="display: none;"></p>
+      <p id="error" style="display: none"></p>
       <div class="">
         <label for="exampleInputUsername" class="form-label">User Name</label>
         <input v-model="formData.username" type="text" />
@@ -53,11 +53,11 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/authStore'
-import { Register } from '@/typings/auth'
+import { Register } from '@/typings/auth/auth'
 import { reactive, ref } from 'vue'
 
 const authStore = useAuthStore()
-const errorMessage = ref(false)
+
 
 // khoi tao form Register
 const formData = reactive<Register>({
@@ -78,41 +78,32 @@ const formData = reactive<Register>({
 const handleFileAvatar = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length) {
-    formData.avatar = input.files[0]
+    const file = input.files[0]
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      formData.avatar = reader.result as string
+    }
+    reader.readAsDataURL(file)
   }
 }
-// dang kyy
-// const handleRegister = () => {
-//   const data = new FormData()
-//   if (formData.username === '') {
-//     document.getElementById('error')!.innerHTML = 'User name không đươc để trống'
-//     document.getElementById('error')!.style.color = 'red'
-//     document.getElementById('error')!.style.display ='block'
-//   }
-//   else {
-//     data.append('username', formData.username.toString())
-//   }
-//   data.append('password', formData.password)
-//   data.append('fullName', formData.fullName)
-//   data.append('email', formData.email)
-//   data.append('jobTitle', formData.jobTitle)
-//   data.append('phoneNumber', formData.phoneNumber)
-//   data.append('description', formData.description)
-//   data.append('address', formData.address)
-//   data.append('homeTown', formData.homeTown)
-//   data.append('role', formData.role)
-//   // kt và thêm ảnh
-//   if (formData.avatar) {
-//     data.append('avatar', formData.avatar)
-//   }
 
-//   // for (let [key, value] of data.entries()) {
-//   //     console.log(key, value);
-//   // }
+// hàm base64 sang File
+function base64ToFile(base64String: string, filename: string): File {
+  // Tách phần dữ liệu base64 từ tiền tố "data:image/jpeg;base64," hoặc "data:image/png;base64,"
+  const arr = base64String.split(',')
+  const mime = arr[0].match(/:(.*?);/)![1] // Lấy định dạng MIME (VD: "image/jpeg" hoặc "image/png")
+  const bstr = atob(arr[1]) // Giải mã chuỗi Base64 thành chuỗi nhị phân
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
 
-//   // goi hàm store de dang ky form
-//   authStore.register(data)
-// }
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+
+  // Tạo đối tượng File mới từ mảng byte và MIME
+  return new File([u8arr], filename, { type: mime })
+}
 
 const handleRegister = () => {
   const data = new FormData()
@@ -141,21 +132,36 @@ const handleRegister = () => {
       data.append(field, formData[field as keyof Register].toString())
     }
   })
+  console.log(formData)
 
   // Nếu không hợp lệ, dừng việc submit
   if (!isValid) return
 
   // Kiểm tra và thêm ảnh
   if (formData.avatar instanceof File) {
-    data.append('avatar', formData.avatar)  
-  }
-  else if(typeof formData.avatar =='string' && formData.avatar.startsWith('/uploads/users/')){
     data.append('avatar', formData.avatar)
+  } else if (typeof formData.avatar == 'string' && formData.avatar.startsWith('data:image/')) {
+    data.append('avatar', formData.avatar)
+  } else {
+    data.append('avatar', '/uploads/users/default-image.png')
   }
-  else{
-  data.append('avatar','/uploads/users/default-image.png')
-  }
+  // chuyen base64 về File
+  // if (
+  //   formData.avatar &&
+  //   typeof formData.avatar === 'string' &&
+  //   formData.avatar.startsWith('data:image/')
+  // ) {
+  //   const file = base64ToFile(formData.avatar, 'avatar.jpg')
+  //   data.append('avatar', file)
+  // } else {
+  //   const defaultAvatar = '/uploads/users/default-image.png'
+  //   data.append('avatar', formData.avatar || defaultAvatar)
+  // }
 
+  // for (let [key, value] of data.entries()) {
+  //   console.log(key, value)
+  // }
+  // console.log(data)
   // Gọi hàm store để đăng ký form
   authStore.register(data)
 }

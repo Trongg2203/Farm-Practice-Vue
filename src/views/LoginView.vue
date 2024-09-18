@@ -50,9 +50,10 @@ const handleLogin = async () => {
       router.push('/dashboard')
     } else if (authStore.isUser) {
       router.push('/home')
-    }
+    } 
   } catch (error) {
-    console.log('Login Error: ', error.message)
+    alert('Something wrong with your account. Please try again')
+    // console.log('Login Error: ', error.message)
   }
 }
 </script>

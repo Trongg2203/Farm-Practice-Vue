@@ -1,5 +1,5 @@
 import axiosInstance from '@/axios/axiosInstance'
-import type { AuthState, Register } from '@/typings/auth'
+import type { AuthState, Register } from '@/typings/auth/auth'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 
@@ -50,7 +50,6 @@ export const useAuthStore = defineStore('authStore', {
         this.accessToken = response.data.accessToken
         this.refreshToken = response.data.refreshToken
 
-        // luu token
         // luu token
         if (response.data.accessToken) {
           localStorage.setItem('accessToken', response.data.accessToken)

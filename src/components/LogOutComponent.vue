@@ -4,7 +4,7 @@
       <a class="navbar-brand" href="/home">Navbar</a>
       <!-- quyền admin -->
       <a href="/dashboard" v-if="authStore.isAdmin">Dashboard</a>
-
+      <router-link :to="{name:'UserMy'}">Tài khoản</router-link>
       <button class="btn btn-outline-success" type="button" @click.prevent="handleLogOut">
         Log Out
       </button>
