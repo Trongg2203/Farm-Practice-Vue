@@ -38,7 +38,7 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 // const error = ref('')
-const register = () =>{
+const register = () => {
   router.push('/register')
 }
 
@@ -50,7 +50,7 @@ const handleLogin = async () => {
       router.push('/dashboard')
     } else if (authStore.isUser) {
       router.push('/home')
-    } 
+    }
   } catch (error) {
     alert('Something wrong with your account. Please try again')
     // console.log('Login Error: ', error.message)
@@ -59,8 +59,7 @@ const handleLogin = async () => {
 </script>
 
 <style>
-
-.btn-register{
+.btn-register {
   border: 1px solid #ccc;
 }
 .flex {

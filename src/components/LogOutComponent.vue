@@ -25,11 +25,11 @@ const handleLogOut = () => {
   router.push('/login')
 }
 
-onBeforeMount(() => {
-  if (authStore.initializeAuthState()) {
-    return true
-  }
-})
+// onBeforeMount(() => {
+//   if (authStore.initializeAuthState()) {
+//     return true
+//   }
+// })
 </script>
 
 <style scoped></style>

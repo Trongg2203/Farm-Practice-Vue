@@ -160,6 +160,7 @@
       <button @click="closeModal" class="btn btn-secondary">Hủy</button>
     </template>
   </Modal>
+  <ListUser />
 </template>
 
 <script setup lang="ts">
@@ -171,6 +172,7 @@ import { getImageUrl } from '../helpers/getImage'
 import Modal from '../components/ModalComponent.vue'
 import { CreateFarmRequest, Farm } from '@/typings/farms'
 import axios from 'axios'
+import ListUser from './users/ListUser.vue'
 // const authStore = useAuthStore()
 
 const farmsStore = useFarmsStore()
@@ -328,18 +330,10 @@ const confirmDelete = async () => {
   }
 }
 
-// không có onMounted
-// API sẽ không được gọi và component có thể không hiển thị thông tin
-// Hàm này không tự động chạy khi component được mount.
-// Nó chỉ là một hàm được định nghĩa để chứa logic gọi API.
-const fetchFarms = () => {
-  farmsStore.fetchFarms() // Gọi API để tải dữ liệu từ máy chủ
-}
-
 // onMounted để đảm bảo rằng khi component này được tạo và hiển thị lần đầu tiên
 // Nếu không có onMounted, hàm fetchFarms sẽ không bao giờ được gọi khi component được mount, vì không có gì kích hoạt nó.
 onMounted(() => {
-  fetchFarms()
+  farmsStore.fetchFarms() 
 })
 
 // onMounted(() => {

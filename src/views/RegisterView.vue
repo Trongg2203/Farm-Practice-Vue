@@ -55,9 +55,10 @@
 import { useAuthStore } from '@/stores/authStore'
 import { Register } from '@/typings/auth/auth'
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
-
+const router = useRouter()
 
 // khoi tao form Register
 const formData = reactive<Register>({
@@ -164,6 +165,7 @@ const handleRegister = () => {
   // console.log(data)
   // Gọi hàm store để đăng ký form
   authStore.register(data)
+  router.push('/login')
 }
 </script>
 
